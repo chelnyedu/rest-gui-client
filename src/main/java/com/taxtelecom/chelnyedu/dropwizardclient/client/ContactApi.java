@@ -13,16 +13,17 @@ public interface ContactApi {
     @GET("contact/all")
     Call<List<Contact>> getAllContact();
 
-    @GET("contact/getContact")
-    Call<Contact> getContact(@Query("id") int id);
 
-    @DELETE("contact/deleteContact")
-    Call<Contact> deleteContact(@Query("id") int id);
+    @GET("contact/{id}")
+    Call<Contact> getContact(@Path("id") int id);
+
+    @DELETE("contact/{id}")
+    Call<Contact> deleteContact(@Path("id") int id);
 
     @POST("contact/")
     Call<Contact> createContact(@Body Contact contact);
 
-    @PUT("contact/updateContact")
-    Call<Contact> updateContact(@Query("id") int id, @Body Contact contact);
+    @PUT("contact/{id}")
+    Call<Contact> updateContact(@Path("id") int id, @Body Contact contact);
 
 }

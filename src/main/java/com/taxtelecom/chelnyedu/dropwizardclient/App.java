@@ -36,29 +36,28 @@ public class App {
         for (Contact c: contactList){
             System.out.println(c.getId()+" "+ c.getFirstName());
         }
-//getContact------------------------------------------------------
-        Call<Contact> c1=service.getContact(1);
-        //System.out.println(c1.execute().raw());
-        Contact c=c1.execute().body();
 
+        //getContact------------------------------------------------------
+        Call<Contact> c1=service.getContact(4);
+        Contact c=c1.execute().body();
         System.out.println(c.getId() +" "+c.getFirstName()+" "+c.getLastName()+" "+ c.getPhone()+" " + c.getMail()+" " +c.getComment());
 //deleteContact------------------------------------------------------
-       /* try {
-            Call<Contact> del = service.deleteContact(8);
-            System.out.println(service.deleteContact(8).execute().raw());
+        try {
+            Call<Contact> del = service.deleteContact(17);
+            System.out.println(service.deleteContact(17).execute().raw());
             //System.out.println("Contact was deleted");
         }catch (Throwable t){
             System.out.println("Something wrong! Contact was not deleted!!!!!!!!!!!!!!!!!!!!!");
-        }*/
+        }
         //createContact---------------------------------------------------------------
-        //Contact cr=new Contact(1,"Olya", "Kuzmina", "9875123", "rere", "cool" );
-        //Call<Contact> create = service.createContact(cr);
+        Contact cr=new Contact(1,"Olya", "Kuzmina", "9875123", "rere", "cool" );
+        Call<Contact> create = service.createContact(cr);
 
 
         //updateContact--------------------------------------------------------------
 
-        Contact contactforupdate = new Contact(1, "John", "Doe", "+987654321", "rere", "qwerty");
-        Call<Contact> update=service.updateContact(1, contactforupdate);
+        Contact contactforupdate = new Contact(4, "Jane", "Doe", "+987654321", "rere", "qwerty");
+        Call<Contact> update=service.updateContact(4, contactforupdate);
         System.out.println(update.execute().raw());
 
     }
