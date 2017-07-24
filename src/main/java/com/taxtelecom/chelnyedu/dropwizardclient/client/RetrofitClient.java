@@ -12,7 +12,6 @@ import static com.taxtelecom.chelnyedu.dropwizardclient.App.service;
  * Created by user on 21.07.17.
  */
 public class RetrofitClient {
-    //private static ContactApi service = App.getApi();
     String ok = "OK";
     String wrong = "WRONG";
 
