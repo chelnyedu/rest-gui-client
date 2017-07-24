@@ -2,11 +2,14 @@ package com.taxtelecom.chelnyedu.dropwizardclient.client;
 
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.taxtelecom.chelnyedu.dropwizardclient.App.service;
 
 /**
  * Created by user on 21.07.17.
@@ -14,6 +17,12 @@ import static com.taxtelecom.chelnyedu.dropwizardclient.App.service;
 public class RetrofitClient {
     String ok = "OK";
     String wrong = "WRONG";
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://localhost:8080")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+    ContactApi service = retrofit.create(ContactApi.class);
 
     public Contact gContact(int id) throws IOException {
         Call<Contact> c1 = service.getContact(id);
@@ -41,6 +50,16 @@ public class RetrofitClient {
 
     public String creaContact(Contact contact) throws IOException {
         Call<Contact> create = service.createContact(contact);
+        create.enqueue(new Callback<Contact>() {
+            @Override
+            public void onResponse(Call<Contact> call, Response<Contact> response) {
+            }
+
+            @Override
+            public void onFailure(Call<Contact> call, Throwable t) {
+
+            }
+        });
         return ok;
     }
 
