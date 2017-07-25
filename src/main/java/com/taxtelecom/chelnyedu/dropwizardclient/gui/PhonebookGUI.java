@@ -7,19 +7,21 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.util.List;
 
 public class PhonebookGUI extends Application {
 
-    private Stage primaryStage;
-    private BorderPane rootLayout;
+    private ObservableList<Contact> contactList;
     private JerseyClient client = new JerseyClient();
     private TextField firstNameTextField;
     private TextField lastNameTextField;
@@ -41,9 +43,9 @@ public class PhonebookGUI extends Application {
         paneLeft.setPrefSize(300, 300);
 
         //Table
-        TableView table = new TableView();
+        final TableView table = new TableView();
         table.setPrefSize(300, 250);
-        TableColumn<Contact, String> firstName = new TableColumn("First Name");
+        final TableColumn<Contact, String> firstName = new TableColumn("First Name");
         firstName.setPrefWidth(150);
         TableColumn<Contact, String> lastName = new TableColumn("Last Name");
         lastName.setPrefWidth(150);
@@ -53,19 +55,26 @@ public class PhonebookGUI extends Application {
         firstName.setCellValueFactory(new PropertyValueFactory<Contact, String>("firstName"));
         lastName.setCellValueFactory(new PropertyValueFactory<Contact, String>("lastName"));
 
-        ObservableList<Contact> contact = getContactList();
-        table.setItems(contact);
+        table.setItems(getContactList());
 
         //cell click action
         table.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
            @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                Contact selectedUser = (Contact) newValue;
-                firstNameTextField.setText(selectedUser.getFirstName());
-                lastNameTextField.setText(selectedUser.getLastName());
-                phoneTextField.setText(selectedUser.getPhone());
-                mailTextField.setText(selectedUser.getMail());
-                commentTextField.setText(selectedUser.getComment());
+               if (newValue != null) {
+                   Contact selectedUser = (Contact) newValue;
+                   firstNameTextField.setText(selectedUser.getFirstName());
+                   lastNameTextField.setText(selectedUser.getLastName());
+                   phoneTextField.setText(selectedUser.getPhone());
+                   mailTextField.setText(selectedUser.getMail());
+                   commentTextField.setText(selectedUser.getComment());
+               } else {
+                   firstNameTextField.clear();
+                   lastNameTextField.clear();
+                   phoneTextField.clear();
+                   mailTextField.clear();
+                   commentTextField.clear();
+               }
             }
         });
 
@@ -79,6 +88,31 @@ public class PhonebookGUI extends Application {
         AnchorPane.setLeftAnchor(newContact, 5.0);
         AnchorPane.setRightAnchor(deleteContact, 5.0);
         paneLeft.getChildren().addAll(newContact, deleteContact);
+
+        newContact.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    client.createContact(firstNameTextField.getText(), lastNameTextField.getText(),
+                            phoneTextField.getText(), mailTextField.getText(), commentTextField.getText());
+
+                    table.setItems(getContactList());
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        deleteContact.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Contact delContact = (Contact) table.getSelectionModel().getSelectedItem();
+                client.deleteContact(delContact.getId());
+
+                table.setItems(getContactList());
+            }
+        });
 
 
         //RightSide
@@ -118,6 +152,22 @@ public class PhonebookGUI extends Application {
         AnchorPane.setLeftAnchor(editButton, 75.0);
         paneRigth.getChildren().add(editButton);
 
+        editButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    Contact updateContact = (Contact) table.getSelectionModel().getSelectedItem();
+
+                    client.updateContact(updateContact.getId(), firstNameTextField.getText(), lastNameTextField.getText(),
+                            phoneTextField.getText(), mailTextField.getText(), commentTextField.getText());
+
+                    table.setItems(getContactList());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
         //SplitPanel
         SplitPane pane = new SplitPane();
@@ -140,16 +190,4 @@ public class PhonebookGUI extends Application {
         ObservableList<Contact> list = FXCollections.observableArrayList(arrayList);
         return list;
     }
-
-    private void showContactDetails() {
-        Contact contact = new Contact(1, "2", "3", "4", "5", "6");
-
-        firstNameTextField.setText(contact.getFirstName());
-        lastNameTextField.setText(contact.getLastName());
-        phoneTextField.setText(contact.getPhone());
-        mailTextField.setText(contact.getMail());
-        commentTextField.setText(contact.getComment());
-    }
-
-
 }
