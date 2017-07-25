@@ -1,4 +1,4 @@
-package com.taxtelecom.chelnyedu.dropwizardclient.JerseyClient;
+package com.taxtelecom.chelnyedu.dropwizardclient.jerseyclient;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

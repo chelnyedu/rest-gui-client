@@ -1,6 +1,6 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.gui;
 
-import com.taxtelecom.chelnyedu.dropwizardclient.JerseyClient.JerseyClient;
+import com.taxtelecom.chelnyedu.dropwizardclient.jerseyclient.JerseyClient;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 
 public class PhonebookGUI extends Application {
 
-    private ObservableList<Contact> contactList;
     private JerseyClient client = new JerseyClient();
     private TextField firstNameTextField;
     private TextField lastNameTextField;
@@ -38,6 +37,7 @@ public class PhonebookGUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        //localization
         ResourceBundle bundle = ResourceBundle.getBundle("locale",new Locale("en"));
         primaryStage.setTitle(bundle.getString("title"));
 
@@ -59,7 +59,6 @@ public class PhonebookGUI extends Application {
         //add contacts in table
         firstName.setCellValueFactory(new PropertyValueFactory<Contact, String>("firstName"));
         lastName.setCellValueFactory(new PropertyValueFactory<Contact, String>("lastName"));
-
         table.setItems(getContactList());
 
         //cell click action
@@ -185,7 +184,7 @@ public class PhonebookGUI extends Application {
 
 
         primaryStage.setScene(new Scene(root, 610, 310));
-        //primaryStage.setResizable(false);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
