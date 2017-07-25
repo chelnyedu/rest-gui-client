@@ -95,5 +95,24 @@ public class PhoneBookController{
         tableContact.setItems(observableList);
     }
 
+    public  void handleAddContact() throws IOException {
+        Contact newContact = new Contact(1, firstNameField.getText(), lastNameField.getText(),
+                phoneField.getText(), mailField.getText(), commentField.getText());
+        retrofitClient.creaContact(newContact);
+        tableContact.getItems().removeAll(observableList);
+        initData();
+        tableContact.setItems(observableList);
+    }
+
+    public void handleUpdateContact() throws IOException{
+        int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
+        Contact contactForUpdate = new Contact(selectedIndex,firstNameField.getText(), lastNameField.getText(),
+                phoneField.getText(), mailField.getText(), commentField.getText() );
+        retrofitClient.upContact(contactForUpdate);
+        tableContact.getItems().removeAll(observableList);
+        initData();
+        tableContact.setItems(observableList);
+    }
+
 
 }

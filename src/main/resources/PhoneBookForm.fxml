@@ -79,9 +79,9 @@ fx:controller="com.taxtelecom.chelnyedu.dropwizardclient.guiform.PhoneBookContro
                   </GridPane>
                   <ButtonBar layoutX="10.0" layoutY="246.0" prefHeight="40.0" prefWidth="370.0">
                     <buttons>
-                      <Button id="buttonAdd" mnemonicParsing="false" text="Добавить" />
+                      <Button id="buttonAdd" mnemonicParsing="false" onAction="#handleAddContact" text="Добавить" />
                         <Button id="buttonDel" mnemonicParsing="false" onAction="#handleDeleteContact" text="Удалить" />
-                        <Button id="buttonUp" mnemonicParsing="false" text="Обновить" />
+                        <Button id="buttonUp" mnemonicParsing="false" onAction="#handleUpdateContact" text="Обновить" />
                     </buttons>
                   </ButtonBar>
 
