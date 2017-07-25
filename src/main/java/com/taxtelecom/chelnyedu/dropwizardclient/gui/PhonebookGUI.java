@@ -3,6 +3,8 @@ package com.taxtelecom.chelnyedu.dropwizardclient.gui;
 import com.taxtelecom.chelnyedu.dropwizardclient.JerseyClient.JerseyClient;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -12,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
 import java.util.List;
 
 public class PhonebookGUI extends Application {
@@ -55,6 +56,18 @@ public class PhonebookGUI extends Application {
         ObservableList<Contact> contact = getContactList();
         table.setItems(contact);
 
+        //cell click action
+        table.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+           @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                Contact selectedUser = (Contact) newValue;
+                firstNameTextField.setText(selectedUser.getFirstName());
+                lastNameTextField.setText(selectedUser.getLastName());
+                phoneTextField.setText(selectedUser.getPhone());
+                mailTextField.setText(selectedUser.getMail());
+                commentTextField.setText(selectedUser.getComment());
+            }
+        });
 
         paneLeft.getChildren().add(table);
 
