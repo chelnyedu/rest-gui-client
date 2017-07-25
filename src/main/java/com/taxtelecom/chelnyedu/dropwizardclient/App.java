@@ -26,7 +26,7 @@ public class App  extends Application{
         try {
             // Загружаем корневой макет из fxml файла.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(App.class.getResource("guiform/PhoneBookForm.fxml"));
+            loader.setLocation(App.class.getResource("/PhoneBookForm.fxml"));
             rootLayout = loader.load();
 
             // Отображаем сцену, содержащую корневой макет.
