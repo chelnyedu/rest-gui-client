@@ -1,15 +1,14 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.guiform;
 
-
-import com.taxtelecom.chelnyedu.dropwizardclient.App;
 import com.taxtelecom.chelnyedu.dropwizardclient.client.RetrofitClient;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
@@ -27,19 +26,19 @@ public class PhoneBookController{
     private TableColumn<Contact, String> firstNameColumn;
     @FXML
     private TableColumn<Contact, String> lastNameColumn;
+    @FXML
+    private TextField firstNameField;
+    @FXML
+    private TextField lastNameField;
+    @FXML
+    private TextField phoneField;
+    @FXML
+    private TextField mailField;
+    @FXML
+    private TextField commentField;
+    @FXML
+    private Button buttonDel;
 
-    @FXML
-    private Label firstNameLabel;
-    @FXML
-    private Label lastNameLabel;
-    @FXML
-    private Label phoneLabel;
-    @FXML
-    private Label mailLabel;
-    @FXML
-    private Label commentLabel;
-
-    private App mainApp;
 
     public PhoneBookController(){
 
@@ -48,10 +47,16 @@ public class PhoneBookController{
     @FXML
     private void initialize() throws IOException {
         initData();
-
+        //инициализация таблицы и привязка табличных значений к значениям модели
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<Contact, String>("firstName"));
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<Contact, String>("lastName"));
         tableContact.setItems(observableList);
+
+        showСontactDetails(null);
+        //слушатель
+        tableContact.getSelectionModel().selectedItemProperty().
+                addListener((observable, oldValue, newValue)->showСontactDetails(newValue));
+
     }
 
 
@@ -61,18 +66,34 @@ public class PhoneBookController{
         for (int i=0; i<contactList.size();i++){
             observableList.add(contactList.get(i));
         }
-        //ObservableList<Contact> observableList = FXCollections.observableArrayList(contactList);
     }
 
-  /*  @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<Contact> contactList = null;
-        try {
-            contactList = retrofitClient.contactList();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+    public void showСontactDetails(Contact contact){
+        if(contact!=null) {
+            firstNameField.setText(contact.getFirstName());
+            lastNameField.setText(contact.getLastName());
+            phoneField.setText(contact.getPhone());
+            mailField.setText(contact.getMail());
+            commentField.setText(contact.getComment());
+        }else {
+            firstNameField.setText(" ");
+            lastNameField.setText(" ");
+            phoneField.setText(" ");
+            mailField.setText(" ");
+            commentField.setText(" ");
         }
-        ObservableList<Contact> observableList = FXCollections.observableArrayList(contactList);
+
+    }
+
+
+    public void handleDeleteContact() throws IOException{
+        int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
+        retrofitClient.delContact(selectedIndex);
+        tableContact.getItems().removeAll(observableList);
+        initData();
         tableContact.setItems(observableList);
-    }*/
+    }
+
+
 }

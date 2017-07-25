@@ -31,9 +31,6 @@ public class App  extends Application{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/PhoneBookForm.fxml"));
             rootLayout = loader.load();
-
-       //     PhoneBookController controller = loader.getController();
-        //    controller.setMainApp(this);
             // Отображаем сцену, содержащую корневой макет.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
