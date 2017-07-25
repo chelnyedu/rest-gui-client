@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class PhonebookGUI extends Application {
 
@@ -36,6 +38,9 @@ public class PhonebookGUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        ResourceBundle bundle = ResourceBundle.getBundle("locale",new Locale("en"));
+        primaryStage.setTitle(bundle.getString("title"));
+
         AnchorPane root = new AnchorPane();
 
         //LeftSide
@@ -45,9 +50,9 @@ public class PhonebookGUI extends Application {
         //Table
         final TableView table = new TableView();
         table.setPrefSize(300, 250);
-        final TableColumn<Contact, String> firstName = new TableColumn("First Name");
+        final TableColumn<Contact, String> firstName = new TableColumn(bundle.getString("column.FirstName"));
         firstName.setPrefWidth(150);
-        TableColumn<Contact, String> lastName = new TableColumn("Last Name");
+        TableColumn<Contact, String> lastName = new TableColumn(bundle.getString("column.LastName"));
         lastName.setPrefWidth(150);
         table.getColumns().addAll(firstName, lastName);
 
@@ -81,8 +86,8 @@ public class PhonebookGUI extends Application {
         paneLeft.getChildren().add(table);
 
         //Left Buttons
-        Button newContact = new Button("Add contact");
-        Button deleteContact = new Button("Delete contact");
+        Button newContact = new Button(bundle.getString("button.AddContact"));
+        Button deleteContact = new Button(bundle.getString("button.DeleteContact"));
         AnchorPane.setBottomAnchor(newContact, 5.0);
         AnchorPane.setBottomAnchor(deleteContact, 5.0);
         AnchorPane.setLeftAnchor(newContact, 5.0);
@@ -123,15 +128,15 @@ public class PhonebookGUI extends Application {
         grid.setHgap(10);
         grid.setVgap(20);
 
-        Label firstNameLabel = new Label(" First Name: ");
+        Label firstNameLabel = new Label(bundle.getString("label.FirstName"));
         firstNameTextField = new TextField();
-        Label lastNameLabel = new Label(" Last Name: ");
+        Label lastNameLabel = new Label(bundle.getString("label.LastName"));
         lastNameTextField = new TextField();
-        Label phoneLabel = new Label(" Phone: ");
+        Label phoneLabel = new Label(bundle.getString("label.Phone"));
         phoneTextField = new TextField();
-        Label mailLabel = new Label(" Mail: ");
+        Label mailLabel = new Label(bundle.getString("label.Mail"));
         mailTextField = new TextField();
-        Label commentLabel = new Label(" Comment: ");
+        Label commentLabel = new Label(bundle.getString("label.Comment"));
         commentTextField = new TextField();
 
         grid.add(firstNameLabel, 1, 1);
@@ -147,7 +152,7 @@ public class PhonebookGUI extends Application {
         paneRigth.getChildren().add(grid);
 
         //Right button
-        Button editButton = new Button("Change contact");
+        Button editButton = new Button(bundle.getString("button.EditContact"));
         AnchorPane.setBottomAnchor(editButton, 5.0);
         AnchorPane.setLeftAnchor(editButton, 75.0);
         paneRigth.getChildren().add(editButton);
@@ -179,9 +184,8 @@ public class PhonebookGUI extends Application {
         root.getChildren().add(pane);
 
 
-        primaryStage.setTitle("PhoneBook");
         primaryStage.setScene(new Scene(root, 610, 310));
-        primaryStage.setResizable(false);
+        //primaryStage.setResizable(false);
         primaryStage.show();
     }
 
