@@ -1,7 +1,7 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.guiform;
 
-import com.taxtelecom.chelnyedu.dropwizardclient.App;
 import com.taxtelecom.chelnyedu.dropwizardclient.client.RetrofitClient;
+import com.taxtelecom.chelnyedu.dropwizardclient.myalert.MyAlert;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,21 +41,20 @@ public class PhoneBookController implements Initializable{
     @FXML
     private TextField commentField;
 
+    MyAlert myAlert = new MyAlert();
+
 
     public PhoneBookController(){
 
     }
-
 
     public void initData(){
         List<Contact> contactList = new ArrayList<>();
             try {
                 contactList = retrofitClient.contactList();
             } catch (IOException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error!!!");
-                alert.setContentText("Ooops, there was an error in filling listcontact!"+e.toString());
-                alert.showAndWait();
+                String s = "filling list contact";
+                myAlert.errorAlert(s, e);
             }
 
         for (int i=0; i<contactList.size();i++){
@@ -97,11 +96,7 @@ public class PhoneBookController implements Initializable{
             }
 
         }catch (NullPointerException e){
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No selection");
-            alert.setHeaderText("No person Selected");
-            alert.setContentText("Please select a person in the table");
-            alert.showAndWait();
+            myAlert.noSelected();
         }
     }
 
@@ -120,7 +115,6 @@ public class PhoneBookController implements Initializable{
                     phoneField.getText(), mailField.getText(), commentField.getText() );
             updateContact(contactForUpdate);
         }
-
 
     }
 
@@ -146,10 +140,8 @@ public class PhoneBookController implements Initializable{
         try {
             retrofitClient.delContact(index);
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error!!!");
-            alert.setContentText("Ooops, there was an error in deleting! "+e.toString());
-            alert.showAndWait();
+            String s = "deleting";
+            myAlert.errorAlert(s, e);
         }
         tableContact.getItems().removeAll(observableList);
         initData();
@@ -159,15 +151,10 @@ public class PhoneBookController implements Initializable{
     private void addContact(Contact newContact){
         try {
             retrofitClient.creaContact(newContact);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success!");
-            alert.setContentText("Contact was created!");
-            alert.showAndWait();
+            myAlert.successAlert("created!");
         }catch (IOException e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error!!!");
-            alert.setContentText("Ooops, there was an error in adding new contact! "+e.toString());
-            alert.showAndWait();
+            String s = "adding new contact!";
+            myAlert.errorAlert(s, e);
         }
         tableContact.getItems().removeAll(observableList);
         initData();
@@ -179,10 +166,7 @@ public class PhoneBookController implements Initializable{
                 lastNameField.getLength() <  2
                 || phoneField.getText().matches("^[a-zA-Z]+$")
                 || phoneField.getLength()<2 || mailField.getLength() <2){
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Validation message");
-            alert.setContentText("Incorrect contact! Change contact");
-            alert.showAndWait();
+            myAlert.validationAlert();
             return false;
         }else return true;
     }
@@ -190,15 +174,10 @@ public class PhoneBookController implements Initializable{
     private void updateContact(Contact contact){
         try {
             retrofitClient.upContact(contact);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success!");
-            alert.setContentText("Contact was updated");
-            alert.showAndWait();
+            myAlert.successAlert("updated!");
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error!!!");
-            alert.setContentText("Ooops, there was an error in adding new contact! "+e.toString());
-            alert.showAndWait();
+            String s = "updating contact!";
+            myAlert.errorAlert(s, e);
         }
         tableContact.getItems().removeAll(observableList);
         initData();
