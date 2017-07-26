@@ -8,6 +8,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Created by user on 18.07.17.
@@ -15,13 +17,10 @@ import java.io.IOException;
 public class App  extends Application{
     private Stage primaryStage;
     private Pane rootLayout;
-    PhoneBookController pk = new PhoneBookController();
 
     @Override
     public void start(Stage primaryStage){
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("PhoneBook");
-
         initRootLayout();
     }
     public void initRootLayout() {
@@ -30,7 +29,9 @@ public class App  extends Application{
             // Загружаем корневой макет из fxml файла.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/PhoneBookForm.fxml"));
+            loader.setResources(ResourceBundle.getBundle("Locale", new Locale("ru")));
             rootLayout = loader.load();
+            primaryStage.setTitle(loader.getResources().getString("PhoneBook"));
             // Отображаем сцену, содержащую корневой макет.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
@@ -43,8 +44,8 @@ public class App  extends Application{
         return primaryStage;
     }
 
-    public static void main(String[] args) {
-        //System.out.println("куку");
+    public static void main(String[] args) throws IOException {
+       //System.out.println("куку");
         launch(args);
 
     }
