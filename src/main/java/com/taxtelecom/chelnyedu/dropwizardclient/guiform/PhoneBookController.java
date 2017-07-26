@@ -41,7 +41,6 @@ public class PhoneBookController implements Initializable{
     @FXML
     private TextField commentField;
 
-    private App app;
 
     public PhoneBookController(){
 
@@ -55,7 +54,7 @@ public class PhoneBookController implements Initializable{
             } catch (IOException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error!!!");
-                alert.setContentText("Ooops, there was an error!"+e.toString());
+                alert.setContentText("Ooops, there was an error in filling listcontact!"+e.toString());
                 alert.showAndWait();
             }
 
@@ -106,23 +105,23 @@ public class PhoneBookController implements Initializable{
         }
     }
 
-    public  void handleAddContact() throws IOException {
-        Contact newContact = new Contact(1, firstNameField.getText(), lastNameField.getText(),
-                phoneField.getText(), mailField.getText(), commentField.getText());
-        retrofitClient.creaContact(newContact);
-        tableContact.getItems().removeAll(observableList);
-        initData();
-        tableContact.setItems(observableList);
+    public  void handleAddContact(){
+        if (isValidContact()){
+            Contact newContact = new Contact(1, firstNameField.getText(), lastNameField.getText(),
+                    phoneField.getText(), mailField.getText(), commentField.getText());
+            addContact(newContact);
+        }
     }
 
     public void handleUpdateContact() throws IOException{
         int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
-        Contact contactForUpdate = new Contact(selectedIndex,firstNameField.getText(), lastNameField.getText(),
-                phoneField.getText(), mailField.getText(), commentField.getText() );
-        retrofitClient.upContact(contactForUpdate);
-        tableContact.getItems().removeAll(observableList);
-        initData();
-        tableContact.setItems(observableList);
+        if (isValidContact()){
+            Contact contactForUpdate = new Contact(selectedIndex,firstNameField.getText(), lastNameField.getText(),
+                    phoneField.getText(), mailField.getText(), commentField.getText() );
+            updateContact(contactForUpdate);
+        }
+
+
     }
 
 
@@ -130,11 +129,11 @@ public class PhoneBookController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resources) {
         this.resourceBundle = resources;
+        //инициализация таблицы и привязка табличных значений к значениям модели
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>(("firstName")));
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>(("lastName")));
         initData();
 
-        //инициализация таблицы и привязка табличных значений к значениям модели
-        firstNameColumn.setCellValueFactory(new PropertyValueFactory<Contact, String>(("firstName")));
-        lastNameColumn.setCellValueFactory(new PropertyValueFactory<Contact, String>(("lastName")));
         tableContact.setItems(observableList);
         //изменить и убрать изначальную загрузку
         showСontactDetails(null);
@@ -143,14 +142,62 @@ public class PhoneBookController implements Initializable{
                 addListener((observable, oldValue, newValue)->showСontactDetails(newValue));
     }
 
-    public void deleteContact(int index){
-
+    private void deleteContact(int index){
         try {
             retrofitClient.delContact(index);
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error!!!");
             alert.setContentText("Ooops, there was an error in deleting! "+e.toString());
+            alert.showAndWait();
+        }
+        tableContact.getItems().removeAll(observableList);
+        initData();
+        tableContact.setItems(observableList);
+    }
+
+    private void addContact(Contact newContact){
+        try {
+            retrofitClient.creaContact(newContact);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success!");
+            alert.setContentText("Contact was created!");
+            alert.showAndWait();
+        }catch (IOException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!!!");
+            alert.setContentText("Ooops, there was an error in adding new contact! "+e.toString());
+            alert.showAndWait();
+        }
+        tableContact.getItems().removeAll(observableList);
+        initData();
+        tableContact.setItems(observableList);
+    }
+
+    private boolean isValidContact(){
+        if (firstNameField.getLength() < 2 ||
+                lastNameField.getLength() <  2
+                || phoneField.getText().matches("^[a-zA-Z]+$")
+                || phoneField.getLength()<2 || mailField.getLength() <2){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Validation message");
+            alert.setContentText("Incorrect contact! Change contact");
+            alert.showAndWait();
+            return false;
+        }else return true;
+    }
+
+    private void updateContact(Contact contact){
+        try {
+            retrofitClient.upContact(contact);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success!");
+            alert.setContentText("Contact was updated");
+            alert.showAndWait();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!!!");
+            alert.setContentText("Ooops, there was an error in adding new contact! "+e.toString());
             alert.showAndWait();
         }
         tableContact.getItems().removeAll(observableList);
