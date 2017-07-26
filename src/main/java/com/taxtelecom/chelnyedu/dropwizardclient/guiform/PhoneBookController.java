@@ -1,20 +1,20 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.guiform;
 
+import com.taxtelecom.chelnyedu.dropwizardclient.App;
 import com.taxtelecom.chelnyedu.dropwizardclient.client.RetrofitClient;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -41,14 +41,24 @@ public class PhoneBookController implements Initializable{
     @FXML
     private TextField commentField;
 
+    private App app;
 
     public PhoneBookController(){
 
     }
 
 
-    public void initData() throws IOException {
-        List<Contact> contactList = retrofitClient.contactList();
+    public void initData(){
+        List<Contact> contactList = new ArrayList<>();
+            try {
+                contactList = retrofitClient.contactList();
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error!!!");
+                alert.setContentText("Ooops, there was an error!"+e.toString());
+                alert.showAndWait();
+            }
+
         for (int i=0; i<contactList.size();i++){
             observableList.add(contactList.get(i));
         }
@@ -74,11 +84,26 @@ public class PhoneBookController implements Initializable{
 
 
     public void handleDeleteContact() throws IOException{
-        int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
-        retrofitClient.delContact(selectedIndex);
-        tableContact.getItems().removeAll(observableList);
-        initData();
-        tableContact.setItems(observableList);
+        try{
+           int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirmation Dialog");
+            confirm.setContentText("Are you sure about this?");
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.get() == ButtonType.OK){
+                deleteContact(selectedIndex);
+
+            } else {
+                confirm.close();
+            }
+
+        }catch (NullPointerException e){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No selection");
+            alert.setHeaderText("No person Selected");
+            alert.setContentText("Please select a person in the table");
+            alert.showAndWait();
+        }
     }
 
     public  void handleAddContact() throws IOException {
@@ -105,11 +130,8 @@ public class PhoneBookController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resources) {
         this.resourceBundle = resources;
-        try {
-            initData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initData();
+
         //инициализация таблицы и привязка табличных значений к значениям модели
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<Contact, String>(("firstName")));
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<Contact, String>(("lastName")));
@@ -119,5 +141,20 @@ public class PhoneBookController implements Initializable{
         //слушатель
         tableContact.getSelectionModel().selectedItemProperty().
                 addListener((observable, oldValue, newValue)->showСontactDetails(newValue));
+    }
+
+    public void deleteContact(int index){
+
+        try {
+            retrofitClient.delContact(index);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!!!");
+            alert.setContentText("Ooops, there was an error in deleting! "+e.toString());
+            alert.showAndWait();
+        }
+        tableContact.getItems().removeAll(observableList);
+        initData();
+        tableContact.setItems(observableList);
     }
 }

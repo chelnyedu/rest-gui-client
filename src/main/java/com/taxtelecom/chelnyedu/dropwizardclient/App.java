@@ -1,5 +1,6 @@
 package com.taxtelecom.chelnyedu.dropwizardclient;
 
+import com.taxtelecom.chelnyedu.dropwizardclient.client.RetrofitClient;
 import com.taxtelecom.chelnyedu.dropwizardclient.guiform.PhoneBookController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -47,6 +48,8 @@ public class App  extends Application{
     public static void main(String[] args) throws IOException {
        //System.out.println("куку");
         launch(args);
+        //RetrofitClient rc = new RetrofitClient();
+        //System.out.println(rc.delContact(35));
 
     }
 
