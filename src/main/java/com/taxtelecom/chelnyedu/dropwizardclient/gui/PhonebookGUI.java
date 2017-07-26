@@ -17,6 +17,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -29,7 +31,7 @@ public class PhonebookGUI extends Application {
     private TextField phoneTextField;
     private TextField mailTextField;
     private TextField commentTextField;
-
+    ResourceBundle bundle;
     public static void main(String[] args) {
         launch(args);
     }
@@ -38,7 +40,7 @@ public class PhonebookGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         //localization
-        ResourceBundle bundle = ResourceBundle.getBundle("locale",new Locale("en"));
+        bundle = ResourceBundle.getBundle("locale",new Locale("en"));
         primaryStage.setTitle(bundle.getString("title"));
 
         AnchorPane root = new AnchorPane();
@@ -97,6 +99,7 @@ public class PhonebookGUI extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 try {
+                    alertNoValidPerson();
                     client.createContact(firstNameTextField.getText(), lastNameTextField.getText(),
                             phoneTextField.getText(), mailTextField.getText(), commentTextField.getText());
 
@@ -111,10 +114,14 @@ public class PhonebookGUI extends Application {
         deleteContact.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Contact delContact = (Contact) table.getSelectionModel().getSelectedItem();
-                client.deleteContact(delContact.getId());
+                try {
+                    Contact delContact = (Contact) table.getSelectionModel().getSelectedItem();
+                    client.deleteContact(delContact.getId());
 
-                table.setItems(getContactList());
+                    table.setItems(getContactList());
+                }catch (NullPointerException e){
+                    alertNoSelectContact(e);
+                }
             }
         });
 
@@ -162,12 +169,13 @@ public class PhonebookGUI extends Application {
                 try {
                     Contact updateContact = (Contact) table.getSelectionModel().getSelectedItem();
 
+                    alertNoValidPerson();
                     client.updateContact(updateContact.getId(), firstNameTextField.getText(), lastNameTextField.getText(),
                             phoneTextField.getText(), mailTextField.getText(), commentTextField.getText());
 
                     table.setItems(getContactList());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException | NullPointerException e) {
+                    alertNoSelectContact(e);
                 }
             }
         });
@@ -192,5 +200,31 @@ public class PhonebookGUI extends Application {
         List<Contact> arrayList = client.getAllContact();
         ObservableList<Contact> list = FXCollections.observableArrayList(arrayList);
         return list;
+    }
+
+    private void alertNoSelectContact(Exception ex){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.getDialogPane().setPrefSize(400,250);
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+
+        String exceptionText = sw.toString();
+
+        TextArea textArea = new TextArea(exceptionText);
+
+        alert.setContentText(bundle.getString("error.NoSelect"));
+        alert.getDialogPane().setExpandableContent(textArea);
+        alert.showAndWait();
+    }
+
+    private void alertNoValidPerson(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        if(firstNameTextField.getLength() < 2 || lastNameTextField.getLength() < 2 ||
+                phoneTextField.getLength() < 2 || mailTextField.getLength() < 2){
+            alert.setContentText(bundle.getString("error.NoValid"));
+            alert.showAndWait();
+        }
     }
 }
