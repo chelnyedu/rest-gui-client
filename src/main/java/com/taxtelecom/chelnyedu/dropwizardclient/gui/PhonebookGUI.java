@@ -38,8 +38,8 @@ public class PhonebookGUI extends Application {
 
     public static void main(String[] args) {
          args = new String[1];
-         args[0] = "jersey";
-        // args[0] = "retrofit";
+         //args[0] = "jersey";
+         args[0] = "retrofit";
 
         client = factory.getClientType(args[0]);
         launch(args);
@@ -61,7 +61,7 @@ public class PhonebookGUI extends Application {
         //Table
         final TableView table = new TableView();
         table.setPrefSize(300, 250);
-        final TableColumn<Contact, String> firstName = new TableColumn(bundle.getString("column.FirstName"));
+        TableColumn<Contact, String> firstName = new TableColumn(bundle.getString("column.FirstName"));
         firstName.setPrefWidth(150);
         TableColumn<Contact, String> lastName = new TableColumn(bundle.getString("column.LastName"));
         lastName.setPrefWidth(150);

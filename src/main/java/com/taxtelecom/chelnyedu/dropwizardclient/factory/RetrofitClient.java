@@ -23,8 +23,7 @@ public class RetrofitClient implements ClientInterface{
     @Override
     public List<Contact> getListContact() throws IOException{
             Call<List<Contact>> call = service.getAllContact();
-        List<Contact> contacts = call.execute().body();
-            return contacts;
+            return call.execute().body();
     }
 
     @Override
@@ -43,12 +42,14 @@ public class RetrofitClient implements ClientInterface{
     }
 
     @Override
-    public void updateContact(Contact contact){
-        service.updateContact(contact.getId(), contact);
+    public void updateContact(Contact contact) throws IOException{
+        Call<Contact> update =service.updateContact(contact.getId(), contact);
+        update.execute();
     }
 
     @Override
-    public void deleteContact(int id){
-       service.deleteContact(id);
+    public void deleteContact(int id) throws IOException{
+        Call<Contact> del = service.deleteContact(id);
+        del.execute();
     }
 }
