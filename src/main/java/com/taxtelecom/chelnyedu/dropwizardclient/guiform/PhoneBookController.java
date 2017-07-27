@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 public class PhoneBookController implements Initializable{
     private ResourceBundle resourceBundle;
     RetrofitClient retrofitClient = new RetrofitClient();
-    private ObservableList<Contact> observableList = FXCollections.observableArrayList();
+    public ObservableList<Contact> observableList = FXCollections.observableArrayList();
     @FXML
     private TableView<Contact> tableContact;
     @FXML
@@ -41,6 +41,7 @@ public class PhoneBookController implements Initializable{
     @FXML
     private TextField commentField;
 
+
     MyAlert myAlert = new MyAlert();
 
 
@@ -54,7 +55,7 @@ public class PhoneBookController implements Initializable{
     public void initData(){
         List<Contact> contactList = new ArrayList<>();
             try {
-                contactList = retrofitClient.contactList();
+                contactList = retrofitClient.getListContact();
             } catch (IOException e) {
                 String s = "filling list contact";
                 myAlert.errorAlert(s, e);
@@ -63,6 +64,7 @@ public class PhoneBookController implements Initializable{
         for (int i=0; i<contactList.size();i++){
             observableList.add(contactList.get(i));
         }
+        tableContact.setItems(observableList);
     }
 
 
@@ -150,17 +152,23 @@ public class PhoneBookController implements Initializable{
         tableContact.setItems(observableList);
         //изменить и убрать изначальную загрузку
         showСontactDetails(null);
+
         //слушатель
         tableContact.getSelectionModel().selectedItemProperty().
                 addListener((observable, oldValue, newValue)->showСontactDetails(newValue));
     }
+
+   /*public void tryShowData() {
+                initData();
+       tableContact.setItems(observableList);
+    }*/
 
     /**
      * Method of deleting contact.
      */
     private void deleteContact(int index){
         try {
-            retrofitClient.delContact(index);
+            retrofitClient.deleteContact(index);
         } catch (IOException e) {
             String s = "deleting";
             myAlert.errorAlert(s, e);
@@ -175,7 +183,7 @@ public class PhoneBookController implements Initializable{
      */
     private void addContact(Contact newContact){
         try {
-            retrofitClient.creaContact(newContact);
+            retrofitClient.createContact(newContact);
             myAlert.successAlert("created!");
         }catch (IOException e){
             String s = "adding new contact!";
@@ -204,7 +212,7 @@ public class PhoneBookController implements Initializable{
      */
     private void updateContact(Contact contact){
         try {
-            retrofitClient.upContact(contact);
+            retrofitClient.updateContact(contact);
             myAlert.successAlert("updated!");
         } catch (IOException e) {
             String s = "updating contact!";
