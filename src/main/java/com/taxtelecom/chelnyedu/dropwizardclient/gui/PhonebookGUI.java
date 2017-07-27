@@ -1,6 +1,7 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.gui;
 
-import com.taxtelecom.chelnyedu.dropwizardclient.jerseyclient.JerseyClient;
+import com.taxtelecom.chelnyedu.dropwizardclient.factory.ClientInterface;
+import com.taxtelecom.chelnyedu.dropwizardclient.factory.Factory;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -25,14 +26,22 @@ import java.util.ResourceBundle;
 
 public class PhonebookGUI extends Application {
 
-    private JerseyClient client = new JerseyClient();
+    static Factory factory = new Factory();
+    static ClientInterface client ;
     private TextField firstNameTextField;
     private TextField lastNameTextField;
     private TextField phoneTextField;
     private TextField mailTextField;
     private TextField commentTextField;
     ResourceBundle bundle;
+    ObservableList<Contact> list;
+
     public static void main(String[] args) {
+         args = new String[1];
+         args[0] = "jersey";
+        // args[0] = "retrofit";
+
+        client = factory.getClientType(args[0]);
         launch(args);
     }
 
@@ -100,8 +109,11 @@ public class PhonebookGUI extends Application {
             public void handle(ActionEvent actionEvent) {
                 try {
                     alertNoValidPerson();
-                    client.createContact(firstNameTextField.getText(), lastNameTextField.getText(),
+
+                    Contact contact = new Contact(0,firstNameTextField.getText(), lastNameTextField.getText(),
                             phoneTextField.getText(), mailTextField.getText(), commentTextField.getText());
+
+                    client.createContact(contact);
 
                     table.setItems(getContactList());
 
@@ -117,9 +129,8 @@ public class PhonebookGUI extends Application {
                 try {
                     Contact delContact = (Contact) table.getSelectionModel().getSelectedItem();
                     client.deleteContact(delContact.getId());
-
                     table.setItems(getContactList());
-                }catch (NullPointerException e){
+                }catch (NullPointerException | IOException e){
                     alertNoSelectContact(e);
                 }
             }
@@ -170,9 +181,9 @@ public class PhonebookGUI extends Application {
                     Contact updateContact = (Contact) table.getSelectionModel().getSelectedItem();
 
                     alertNoValidPerson();
-                    client.updateContact(updateContact.getId(), firstNameTextField.getText(), lastNameTextField.getText(),
+                    Contact contact = new Contact(updateContact.getId(), firstNameTextField.getText(), lastNameTextField.getText(),
                             phoneTextField.getText(), mailTextField.getText(), commentTextField.getText());
-
+                    client.updateContact(contact);
                     table.setItems(getContactList());
                 } catch (IOException | NullPointerException e) {
                     alertNoSelectContact(e);
@@ -196,9 +207,9 @@ public class PhonebookGUI extends Application {
         primaryStage.show();
     }
 
-    private ObservableList<Contact> getContactList() {
-        List<Contact> arrayList = client.getAllContact();
-        ObservableList<Contact> list = FXCollections.observableArrayList(arrayList);
+    private ObservableList<Contact> getContactList() throws IOException{
+        List<Contact> arrayList = client.getListContact();
+        list = FXCollections.observableArrayList(arrayList);
         return list;
     }
 
