@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
- * Created by user on 24.07.17.
+ * Generate GUI form from fxml and control on all action at form
  */
 public class PhoneBookController implements Initializable{
     private ResourceBundle resourceBundle;
@@ -48,6 +48,9 @@ public class PhoneBookController implements Initializable{
 
     }
 
+    /**
+     * fill observableList
+     */
     public void initData(){
         List<Contact> contactList = new ArrayList<>();
             try {
@@ -63,6 +66,10 @@ public class PhoneBookController implements Initializable{
     }
 
 
+    /**
+     * fill TextFields
+     * @param contact
+     */
     public void showСontactDetails(Contact contact){
         if(contact!=null) {
             firstNameField.setText(contact.getFirstName());
@@ -80,7 +87,9 @@ public class PhoneBookController implements Initializable{
 
     }
 
-
+    /**
+     * Button of deleting Contact
+     */
     public void handleDeleteContact() throws IOException{
         try{
            int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
@@ -100,6 +109,9 @@ public class PhoneBookController implements Initializable{
         }
     }
 
+    /**
+     * Button of creating contact
+     */
     public  void handleAddContact(){
         if (isValidContact()){
             Contact newContact = new Contact(1, firstNameField.getText(), lastNameField.getText(),
@@ -108,6 +120,9 @@ public class PhoneBookController implements Initializable{
         }
     }
 
+    /**
+     * Button of updating Contact
+     */
     public void handleUpdateContact() throws IOException{
         int selectedIndex = tableContact.getSelectionModel().getSelectedItem().getId();
         if (isValidContact()){
@@ -118,6 +133,10 @@ public class PhoneBookController implements Initializable{
 
     }
 
+    /**
+     * initialize with start appkication
+     * listener to TableView
+     */
 
     @FXML
     @Override
@@ -136,6 +155,9 @@ public class PhoneBookController implements Initializable{
                 addListener((observable, oldValue, newValue)->showСontactDetails(newValue));
     }
 
+    /**
+     * Method of deleting contact.
+     */
     private void deleteContact(int index){
         try {
             retrofitClient.delContact(index);
@@ -148,6 +170,9 @@ public class PhoneBookController implements Initializable{
         tableContact.setItems(observableList);
     }
 
+    /**
+     * Method of adding contact.
+     */
     private void addContact(Contact newContact){
         try {
             retrofitClient.creaContact(newContact);
@@ -161,6 +186,9 @@ public class PhoneBookController implements Initializable{
         tableContact.setItems(observableList);
     }
 
+    /**
+     * Validation of TextField
+     */
     private boolean isValidContact(){
         if (firstNameField.getLength() < 2 ||
                 lastNameField.getLength() <  2
@@ -171,6 +199,9 @@ public class PhoneBookController implements Initializable{
         }else return true;
     }
 
+    /**
+     * Method of updating contact.
+     */
     private void updateContact(Contact contact){
         try {
             retrofitClient.upContact(contact);

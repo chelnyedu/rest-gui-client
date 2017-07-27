@@ -12,7 +12,8 @@ import java.util.List;
 
 
 /**
- * Created by user on 21.07.17.
+ * Retrofit Client including methods of CRUD
+ * Create connection
  */
 public class RetrofitClient {
     String ok = "OK";
@@ -24,23 +25,28 @@ public class RetrofitClient {
             .build();
     ContactApi service = retrofit.create(ContactApi.class);
 
+    /**
+     * Method for get contact by id
+     */
     public Contact gContact(int id) throws IOException {
         Call<Contact> c1 = service.getContact(id);
         Contact c = c1.execute().body();
-        //System.out.println(c.getId() +" "+c.getFirstName()+" "+c.getLastName()+" "+ c.getPhone()+" " + c.getMail()+" " +c.getComment());
         return c;
     }
 
+    /**
+     * Method for get list of contacts
+     */
     public List<Contact> contactList() throws IOException {
         Call<List<Contact>> call = service.getAllContact();
-
         List<Contact> contacts = call.execute().body();
-       /* for (Contact c: contacts){
-            System.out.println(c.getId()+" "+ c.getFirstName());
-        }*/
         return contacts;
     }
 
+    /**
+     * Method for delete contact
+     * @param id
+     */
     public String delContact(int id) throws IOException {
         Call<Contact> del = service.deleteContact(id);
         if (del.execute().isSuccessful()) {
@@ -48,6 +54,10 @@ public class RetrofitClient {
         } else return wrong;
     }
 
+    /**
+     * Method for insert new Contact
+     * @param contact
+     */
     public String creaContact(Contact contact) throws IOException {
         Call<Contact> create = service.createContact(contact);
         create.enqueue(new Callback<Contact>() {
@@ -63,6 +73,10 @@ public class RetrofitClient {
         return ok;
     }
 
+    /**
+     * Method for update contact
+     * @param contact
+     */
     public String upContact(Contact contact) throws IOException {
         Call<Contact> update = service.updateContact(contact.getId(), contact);
         if (update.execute().isSuccessful()) {

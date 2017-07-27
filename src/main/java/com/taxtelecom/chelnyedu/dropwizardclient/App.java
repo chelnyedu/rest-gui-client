@@ -1,7 +1,5 @@
 package com.taxtelecom.chelnyedu.dropwizardclient;
 
-import com.taxtelecom.chelnyedu.dropwizardclient.client.RetrofitClient;
-import com.taxtelecom.chelnyedu.dropwizardclient.guiform.PhoneBookController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,7 +11,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Created by user on 18.07.17.
+ * Main class of application
  */
 public class App  extends Application{
     private Stage primaryStage;
@@ -24,6 +22,10 @@ public class App  extends Application{
         this.primaryStage = primaryStage;
         initRootLayout();
     }
+
+    /**
+     * Initialize scene
+     */
     public void initRootLayout() {
         try {
 
@@ -46,10 +48,7 @@ public class App  extends Application{
     }
 
     public static void main(String[] args) throws IOException {
-       //System.out.println("куку");
         launch(args);
-        //RetrofitClient rc = new RetrofitClient();
-        //System.out.println(rc.delContact(35));
 
     }
 
