@@ -28,11 +28,6 @@ public class RetrofitClient implements ClientInterface{
     }
 
     @Override
-    public void deleteContact(int id){
-       service.deleteContact(id);
-    }
-
-    @Override
     public void createContact(Contact contact){
         Call<Contact> create = service.createContact(contact);
         create.enqueue(new Callback<Contact>() {
@@ -53,8 +48,7 @@ public class RetrofitClient implements ClientInterface{
     }
 
     @Override
-    public Contact getContact(int id) throws IOException{
-            Call<Contact> contact = service.getContact(id);
-            return contact.execute().body();
+    public void deleteContact(int id){
+       service.deleteContact(id);
     }
 }

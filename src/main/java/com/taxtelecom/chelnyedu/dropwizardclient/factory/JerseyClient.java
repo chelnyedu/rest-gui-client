@@ -50,11 +50,4 @@ public class JerseyClient implements ClientInterface {
         String updateContact = mapper.writeValueAsString(contact);
         response = contactResource.type("application/json").put(ClientResponse.class, updateContact);
     }
-
-    @Override
-    public Contact getContact(int id) {
-        contactResource = client.resource(url + id);
-        response = contactResource.accept("application/json").get(ClientResponse.class);
-        return response.getEntity(Contact.class);
-    }
 }
