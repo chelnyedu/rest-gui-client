@@ -7,7 +7,7 @@ import retrofit2.http.*;
 import java.util.List;
 
 /**
- * Created by user on 20.07.17.
+ * interface API for connection with server (Retrofit HTTP Client)
  */
 public interface ContactApi {
     @GET("contact/all")

@@ -1,7 +1,7 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.resources;
 
 /**
- * Created by user on 20.07.17.
+ * Class for representation of contact
  */
 public class Contact {
     private final int id;
