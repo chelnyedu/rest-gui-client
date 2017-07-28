@@ -30,7 +30,7 @@ public class JerseyClient implements InterfaceClient {
     @Override
     public List<Contact> getListContact() throws IOException {
         Gson gson = new Gson();
-        contactResource = client.resource(url + "all");
+        contactResource = client.resource(url + "contact/all");
         response = contactResource.accept("application/json").get(ClientResponse.class);
         String all = response.getEntity(String.class);
         return gson.fromJson(all, new TypeToken<List<Contact>>() {
@@ -43,7 +43,7 @@ public class JerseyClient implements InterfaceClient {
     @Override
     public Contact getContact(int id) throws IOException {
         Gson gson = new Gson();
-        contactResource = client.resource(url + "id");
+        contactResource = client.resource(url + "contact/id");
         response = contactResource.accept("application/json").get(ClientResponse.class);
         String all = response.getEntity(String.class);
         return gson.fromJson(all, new TypeToken<Contact>() {
@@ -56,7 +56,7 @@ public class JerseyClient implements InterfaceClient {
      */
     @Override
     public void createContact(Contact contact) throws IOException {
-        contactResource = client.resource(url);
+        contactResource = client.resource(url+"contact/");
         String newContact = mapper.writeValueAsString(contact);
         response = contactResource.type("application/json").post(ClientResponse.class, newContact);
     }
@@ -67,7 +67,7 @@ public class JerseyClient implements InterfaceClient {
      */
     @Override
     public void deleteContact(int id) throws IOException {
-        contactResource = client.resource(url + id);
+        contactResource = client.resource(url +"contact/" +id);
         contactResource.delete();
     }
 
@@ -77,7 +77,7 @@ public class JerseyClient implements InterfaceClient {
      */
     @Override
     public void updateContact(Contact contact) throws IOException {
-        contactResource = client.resource(url + contact.getId());
+        contactResource = client.resource(url +"contact/"+ contact.getId());
         // Contact contact1 = new Contact(contact.getId(), firstName, lastName, phone, mail, comment);
         String updateContact = mapper.writeValueAsString(contact);
         response = contactResource.type("application/json").put(ClientResponse.class, updateContact);

@@ -1,6 +1,7 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.guiform;
 
 import com.taxtelecom.chelnyedu.dropwizardclient.client.RetrofitClient;
+import com.taxtelecom.chelnyedu.dropwizardclient.factory.InterfaceClient;
 import com.taxtelecom.chelnyedu.dropwizardclient.myalert.MyAlert;
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
 import javafx.collections.FXCollections;
@@ -17,12 +18,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import static com.taxtelecom.chelnyedu.dropwizardclient.App.interfaceClient;
+
 /**
  * Generate GUI form from fxml and control on all action at form
  */
 public class PhoneBookController implements Initializable{
     private ResourceBundle resourceBundle;
-    RetrofitClient retrofitClient = new RetrofitClient();
+    //RetrofitClient retrofitClient = new RetrofitClient();
+    //InterfaceClient client=interfaceClient;
     public ObservableList<Contact> observableList = FXCollections.observableArrayList();
     @FXML
     private TableView<Contact> tableContact;
@@ -55,7 +59,7 @@ public class PhoneBookController implements Initializable{
     public void initData(){
         List<Contact> contactList = new ArrayList<>();
             try {
-                contactList = retrofitClient.getListContact();
+                contactList = interfaceClient.getListContact();
             } catch (IOException e) {
                 String s = "filling list contact";
                 myAlert.errorAlert(s, e);
@@ -168,7 +172,8 @@ public class PhoneBookController implements Initializable{
      */
     private void deleteContact(int index){
         try {
-            retrofitClient.deleteContact(index);
+            interfaceClient.deleteContact(index);
+
         } catch (IOException e) {
             String s = "deleting";
             myAlert.errorAlert(s, e);
@@ -183,7 +188,7 @@ public class PhoneBookController implements Initializable{
      */
     private void addContact(Contact newContact){
         try {
-            retrofitClient.createContact(newContact);
+            interfaceClient.createContact(newContact);
             myAlert.successAlert("created!");
         }catch (IOException e){
             String s = "adding new contact!";
@@ -212,7 +217,7 @@ public class PhoneBookController implements Initializable{
      */
     private void updateContact(Contact contact){
         try {
-            retrofitClient.updateContact(contact);
+            interfaceClient.updateContact(contact);
             myAlert.successAlert("updated!");
         } catch (IOException e) {
             String s = "updating contact!";

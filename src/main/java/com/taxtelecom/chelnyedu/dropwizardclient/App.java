@@ -17,13 +17,13 @@ import java.util.ResourceBundle;
  */
 public class App  extends Application{
     static Factory factory = new Factory();
-    static InterfaceClient interfaceClient;
+    public static InterfaceClient interfaceClient;
     private Stage primaryStage;
     private Pane rootLayout;
 
     public static void main(String[] args) throws IOException {
         args = new String[1];
-        // args[0] = "retrofit";
+        //args[0] = "retrofit";
         args[0] = "jersey";
         interfaceClient = factory.getClienttype(args[0]);
         launch(args);

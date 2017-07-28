@@ -17,11 +17,9 @@ import java.util.List;
  * Create connection
  */
 public class RetrofitClient implements InterfaceClient {
-    String ok = "OK";
-    String wrong = "WRONG";
 
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://localhost:8080")
+            .baseUrl("http://localhost:8080/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
     ContactApi service = retrofit.create(ContactApi.class);
