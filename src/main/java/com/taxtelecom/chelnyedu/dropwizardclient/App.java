@@ -26,9 +26,10 @@ public class App{
     private Pane rootLayout;
 
     public static void main(String[] args) throws IOException {
-        //args[0] = "retrofit";
+        args = new String[1];
+        args[0] = "retrofit";
 //        args[0] = "jersey";
-//        interfaceClient = factory.getClienttype(args[0]);
+        interfaceClient = factory.getClienttype(args[0]);
 
 
         PhonebookSwt ph = new PhonebookSwt(300, 600);
