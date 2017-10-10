@@ -23,12 +23,22 @@ import static com.taxtelecom.chelnyedu.dropwizardclient.App.interfaceClient;
  */
 public class PhonebookSwt extends ApplicationWindow {
     GridLayout layout = new GridLayout(2, false);
-    Label firstNameLabel, lastNameLabel, phoneLabel, mailLabel, commentLabel;
-    Text firstNameField, lastNameField, phoneField, mailField, commentField;
-    Button addButton, updateButton, deleteButton, settingsButton;
+    Label firstNameLabel;
+    Label lastNameLabel;
+    Label phoneLabel;
+    Label mailLabel;
+    Label commentLabel;
+    Text firstNameField;
+    Text lastNameField;
+    Text phoneField;
+    Text mailField;
+    Text commentField;
+    Button addButton;
+    Button updateButton;
+    Button deleteButton;
+    Button settingsButton;
     private final int h;
     private final int w;
-    MyAlert myAlert = new MyAlert();
 
 
 
@@ -78,16 +88,6 @@ public class PhonebookSwt extends ApplicationWindow {
             }
         });
 
-        /*TableColumn firstNameColumn = new TableColumn(table, SWT.NONE);
-        firstNameColumn.setWidth(150);
-        firstNameColumn.setText("First Name");
-
-
-        TableColumn lastNameColumn = new TableColumn(table, SWT.NONE);
-        lastNameColumn.setWidth(150);
-        lastNameColumn.setText("Last Name");
-        table.pack();*/
-
         //2nd row
         Group group = new Group(composite,SWT.SHADOW_ETCHED_IN );
         group.setText("Person's details");
@@ -134,7 +134,7 @@ public class PhonebookSwt extends ApplicationWindow {
         deleteButton.setText("Delete");
         settingsButton = new Button(btngroup, SWT.PUSH);
         settingsButton.setText("Settings");
-        //todo why can not be null for mailfield extract method
+
         tableContactViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
@@ -142,23 +142,13 @@ public class PhonebookSwt extends ApplicationWindow {
                 selection = (IStructuredSelection) tableContactViewer.getSelection();
                 Object firstElement = selection.getFirstElement();
             Contact contact = (Contact) firstElement;
-            firstNameField.setText(contact.getFirstName());
-            lastNameField.setText(contact.getLastName());
-            phoneField.setText(contact.getPhone());
-            mailField.setText(contact.getMail());
-            commentField.setText(contact.getComment());
-
-
+            showContactDetails(contact);
             }
         });
 
 
-        //initdata
-        try {
-            tableContactViewer.setInput(interfaceClient.getListContact());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //initData
+        initData(tableContactViewer);
         //action add button
         addButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -168,16 +158,79 @@ public class PhonebookSwt extends ApplicationWindow {
                             phoneField.getText(), mailField.getText(), commentField.getText());
                     addContact(newContact);
                 }
+                tableContactViewer.getTable().clearAll();
+                initData(tableContactViewer);
             }
         });
 
-        //todo add action for delete
-        //todo add action for update
+
+        deleteButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection selection;
+                selection = (IStructuredSelection) tableContactViewer.getSelection();
+                Contact c = (Contact) selection.getFirstElement();
+                deleteContact(c.getId());
+                tableContactViewer.getTable().clearAll();
+                initData(tableContactViewer);
+            }
+        });
+
+        updateButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection selection;
+                selection = (IStructuredSelection) tableContactViewer.getSelection();
+                Contact c = (Contact) selection.getFirstElement();
+                if (isValidContact()){
+                    Contact contactForUpdate = new Contact(c.getId(),firstNameField.getText(), lastNameField.getText(),
+                            phoneField.getText(), mailField.getText(), commentField.getText() );
+                    updateContact(contactForUpdate);}
+                tableContactViewer.getTable().clearAll();
+                initData(tableContactViewer);
+            }
+        });
+
         //todo add action for settings
 
         btngroup.pack();
 
         return composite;
+    }
+
+    /**
+     * fill tableviwer
+     */
+    private void initData(TableViewer tableContactViewer) {
+        try {
+            tableContactViewer.setInput(interfaceClient.getListContact());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * fill TextFields
+     * @param contact
+     */
+    private void showContactDetails(Contact contact) {
+        if(contact!=null) {
+            firstNameField.setText(contact.getFirstName());
+            lastNameField.setText(contact.getLastName());
+            phoneField.setText(contact.getPhone());
+            if(contact.getMail()==null){
+                mailField.setText("");
+            }else  mailField.setText(contact.getMail());
+            if (contact.getComment()==null){
+                commentField.setText("");
+            }else commentField.setText(contact.getComment());
+        }else {
+            firstNameField.setText("");
+            lastNameField.setText("");
+            phoneField.setText("");
+            mailField.setText("");
+            commentField.setText("");
+        }
     }
 
     /**
@@ -208,20 +261,61 @@ public class PhonebookSwt extends ApplicationWindow {
             MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_INFORMATION);
             messageBox.setMessage("Contact was created!");
             messageBox.setText("Success");
-            //myAlert.successAlert("created!");
+            messageBox.open();
         }catch (IOException e){
             String s = "adding new contact!";
             MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING);
             messageBox.setMessage("Error in" + s + e.toString());
             messageBox.setText("Error");
             messageBox.open();
-            //myAlert.errorAlert(s, e);
+
         }
 
-        /*tableContact.getItems().removeAll(observableList);
-        initData();
-        tableContact.setItems(observableList);*/
+
     }
+
+    /**
+     * Method of deleting contact.
+     */
+    private void deleteContact(int index){
+        try {
+            interfaceClient.deleteContact(index);
+            MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_INFORMATION);
+            messageBox.setMessage("Contact was deleted!");
+            messageBox.setText("Success");
+            messageBox.open();
+
+        } catch (IOException e) {
+            String s = "deleting";
+            MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING);
+            messageBox.setMessage("Error in" + s + e.toString());
+            messageBox.setText("Error");
+            messageBox.open();
+        }
+
+    }
+
+    /**
+     * Method of updating contact.
+     */
+    private void updateContact(Contact contact){
+        try {
+            interfaceClient.updateContact(contact);
+            MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_INFORMATION);
+            messageBox.setMessage("Contact was updated!");
+            messageBox.setText("Success");
+            messageBox.open();
+            //myAlert.successAlert("updated!");
+        } catch (IOException e) {
+            String s = "updating contact!";
+            MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING);
+            messageBox.setMessage("Error in" + s + e.toString());
+            messageBox.setText("Error");
+            messageBox.open();
+        }
+
+    }
+
 
 
 }

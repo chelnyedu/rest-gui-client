@@ -27,8 +27,8 @@ public class App{
 
     public static void main(String[] args) throws IOException {
         args = new String[1];
-        args[0] = "retrofit";
-//        args[0] = "jersey";
+        //args[0] = "retrofit";
+        args[0] = "jersey";
         interfaceClient = factory.getClienttype(args[0]);
 
 
