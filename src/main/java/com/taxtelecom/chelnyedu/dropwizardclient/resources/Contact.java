@@ -11,22 +11,13 @@ public class Contact {
     private final String mail;
     private final String comment;
 
-    public Contact(){
-        this.id = 0;
-        this.firstName = null;
-        this.lastName = null;
-        this.phone = null;
-        this.comment = null;
-        this.mail = null;
-    }
-
     public Contact(int id, String firstName, String lastName, String phone, String mail, String comment){
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
-        this.mail = mail;
-        this.comment = comment;
+        this.mail = mail != null ?  mail : "";
+        this.comment = comment != null ? comment : "";
     }
 
     public int getId() {
@@ -73,5 +64,11 @@ public class Contact {
         result = 31 * result + (mail != null ? mail.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         return result;
+    }
+
+
+    @Override
+    public String toString() {
+        return String.valueOf(id) + '\n' + firstName + ' ' + lastName + '\n' + phone + '\n' + mail + '\n' + comment;
     }
 }
