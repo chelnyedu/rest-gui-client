@@ -1,6 +1,10 @@
 package com.taxtelecom.chelnyedu.dropwizardclient.guiswtjframe;
 
 import com.taxtelecom.chelnyedu.dropwizardclient.resources.Contact;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -13,12 +17,14 @@ import org.eclipse.swt.widgets.*;
 import java.io.IOException;
 
 import static com.taxtelecom.chelnyedu.dropwizardclient.App.interfaceClient;
+import static org.eclipse.jface.preference.JFacePreferences.getPreferenceStore;
 
 
 /**
  * Created by user on 03.10.17.
  */
 public class PhonebookSwt extends ApplicationWindow {
+    TableViewer tableContactViewer;
     Text firstNameField;
     Text lastNameField;
     Text phoneField;
@@ -27,6 +33,7 @@ public class PhonebookSwt extends ApplicationWindow {
     private Button settingsButton;
     private final int h;
     private final int w;
+    PreferenceManager manager = new PreferenceManager();
 
 
 
@@ -36,18 +43,21 @@ public class PhonebookSwt extends ApplicationWindow {
         this.w = w;
     }
 
+    @Override
     protected Control createContents(Composite parent) {
-        //getShell().setMinimumSize(h,w);
+        getShell().setMinimumSize(w,h);
         Composite composite = new Composite(parent, SWT.BORDER);
 
         getShell().setText("Phonebook");
         composite.setLayout(new GridLayout(2, false));
 
         //1st column
-        TableViewer tableContactViewer = new TableViewer(composite, SWT.BORDER);
-        GridData gridTableData = new GridData(GridData.FILL_BOTH);
-        gridTableData.verticalSpan = 2;
+        tableContactViewer = new TableViewer(composite, SWT.BORDER);
+        GridData gridTableData = new GridData(GridData.FILL, GridData.FILL, true,
+                true, 1, 2);
         tableContactViewer.getControl().setLayoutData(gridTableData);
+
+
         final Table table = tableContactViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -56,6 +66,7 @@ public class PhonebookSwt extends ApplicationWindow {
         final TableViewerColumn firstNameColumn = new TableViewerColumn(tableContactViewer, SWT.NONE);
         firstNameColumn.getColumn().setText("First Name");
         firstNameColumn.getColumn().setWidth(150);
+        firstNameColumn.getColumn().setResizable(true);
         firstNameColumn.setLabelProvider(new ColumnLabelProvider() {
                                              @Override
                                              public String getText(Object element) {
@@ -67,6 +78,7 @@ public class PhonebookSwt extends ApplicationWindow {
         lastNameColumn.getColumn().setText("Last Name");
         lastNameColumn.getColumn().setWidth(150);
         lastNameColumn.setLabelProvider(new ColumnLabelProvider() {
+
             @Override
             public String getText(Object element) {
                 Contact contact = (Contact) element;
@@ -75,10 +87,11 @@ public class PhonebookSwt extends ApplicationWindow {
         });
 
         //2nd column
-        Group group = new Group(composite,SWT.SHADOW_ETCHED_IN );
+        final Group group = new Group(composite,SWT.SHADOW_ETCHED_IN );
         group.setText("Person's details");
+
         group.setLayout(new GridLayout(2, false));
-        GridData gridData = new GridData(GridData.GRAB_HORIZONTAL, GridData.VERTICAL_ALIGN_END, true, true);
+        GridData gridData = new GridData(GridData.GRAB_HORIZONTAL, GridData.VERTICAL_ALIGN_END, true, false);
         group.setLayoutData(gridData);
         new Label(group, SWT.NONE).setText("First Name");
         firstNameField = new Text(group, SWT.SINGLE | SWT.BORDER);
@@ -111,16 +124,17 @@ public class PhonebookSwt extends ApplicationWindow {
         settingsButton.setText("Settings");
 
         tableContactViewer.addSelectionChangedListener(selectionChangedEvent -> {
-        IStructuredSelection selection;
-            selection = (IStructuredSelection) tableContactViewer.getSelection();
+        IStructuredSelection selection = (IStructuredSelection) tableContactViewer.getSelection();
             Object firstElement = selection.getFirstElement();
         Contact contact = (Contact) firstElement;
         showContactDetails(contact);
         });
 
 
+
+
         //initData
-        initData(tableContactViewer);
+        initData();
         //action add button
         addButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -129,46 +143,55 @@ public class PhonebookSwt extends ApplicationWindow {
                     Contact newContact = new Contact(1, firstNameField.getText(), lastNameField.getText(),
                             phoneField.getText(), mailField.getText(), commentField.getText());
                     addContact(newContact);
-                    initData(tableContactViewer);
+                    initData();
                 }
             }
         });
 
 
         deleteButton.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Contact contact = (Contact)((IStructuredSelection) tableContactViewer.getSelection()).getFirstElement();
                 deleteContact(contact.getId());
-                initData(tableContactViewer);
+                initData();
             }
         });
 
         updateButton.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-                IStructuredSelection selection;
-                selection = (IStructuredSelection) tableContactViewer.getSelection();
+                IStructuredSelection selection = (IStructuredSelection) tableContactViewer.getSelection();
                 Contact c = (Contact) selection.getFirstElement();
                 if (isValidContact()){
                     Contact contactForUpdate = new Contact(c.getId(),firstNameField.getText(), lastNameField.getText(),
                             phoneField.getText(), mailField.getText(), commentField.getText() );
                     updateContact(contactForUpdate);}
-                initData(tableContactViewer);
+                initData();
             }
         });
 
         //todo add action for settings
 
+        settingsButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                SettingsSwt settingsSwt = new SettingsSwt(getShell());
+                settingsSwt.open();
+            }
+        });
         buttonGroup.pack();
 
         return composite;
     }
 
+
     /**
      * fill tableviwer
      */
-    private void initData(TableViewer tableContactViewer) {
+    public void initData() {
         try {
             tableContactViewer.setInput(interfaceClient.getListContact());
         } catch (IOException e) {
@@ -270,7 +293,6 @@ public class PhonebookSwt extends ApplicationWindow {
             messageBox.setMessage("Contact was updated!");
             messageBox.setText("Success");
             messageBox.open();
-            //myAlert.successAlert("updated!");
         } catch (IOException e) {
             String s = "updating contact!";
             MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING);
