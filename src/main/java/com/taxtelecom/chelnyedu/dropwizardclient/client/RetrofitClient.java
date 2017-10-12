@@ -29,8 +29,9 @@ public class RetrofitClient implements InterfaceClient {
     @Override
     public List<Contact> getListContact() throws IOException {
         Call<List<Contact>> call = service.getAllContact();
-        List<Contact> contacts = call.execute().body();
-        return contacts;
+        contact.clear();
+        contact.addAll(call.execute().body());
+        return contact;
     }
 
     /**

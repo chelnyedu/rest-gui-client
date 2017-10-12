@@ -144,6 +144,7 @@ public class PhonebookSwt extends ApplicationWindow {
                             phoneField.getText(), mailField.getText(), commentField.getText());
                     addContact(newContact);
                     initData();
+                   // updateData();
                 }
             }
         });
@@ -155,7 +156,8 @@ public class PhonebookSwt extends ApplicationWindow {
             public void widgetSelected(SelectionEvent e) {
                 Contact contact = (Contact)((IStructuredSelection) tableContactViewer.getSelection()).getFirstElement();
                 deleteContact(contact.getId());
-                initData();
+                //initData();
+                updateData();
             }
         });
 
@@ -169,7 +171,8 @@ public class PhonebookSwt extends ApplicationWindow {
                     Contact contactForUpdate = new Contact(c.getId(),firstNameField.getText(), lastNameField.getText(),
                             phoneField.getText(), mailField.getText(), commentField.getText() );
                     updateContact(contactForUpdate);}
-                initData();
+                updateData();
+                //initData();
             }
         });
 
@@ -194,6 +197,16 @@ public class PhonebookSwt extends ApplicationWindow {
     public void initData() {
         try {
             tableContactViewer.setInput(interfaceClient.getListContact());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateData() {
+        try {
+            interfaceClient.getListContact();
+            tableContactViewer.refresh();
+            tableContactViewer.getElementAt(tableContactViewer.getTable().getTopIndex());
         } catch (IOException e) {
             e.printStackTrace();
         }

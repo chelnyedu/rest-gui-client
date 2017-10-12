@@ -4,8 +4,11 @@ import com.taxtelecom.chelnyedu.dropwizardclient.resources.Settings;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 
@@ -33,14 +36,18 @@ public class SettingsSwt extends ApplicationWindow {
     @Override
     protected Control createContents(Composite parent){
         parent.setSize(175,150);
+        getShell().setText("Settings");
         Composite composite = new Composite(parent, SWT.NONE);
+
         composite.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-
-        //IPreferenceStore store = Settings.getStore();
+        Settings.setClient("jersey");
 
         //System.err.println("Тип клиента: " + store.getString("clientType"));
         new Label(composite, SWT.FILL).setText("Выберите клиент для \nподключения к серверу");
+
+
+
         retrofitButton = new Button(composite, SWT.RADIO);
         retrofitButton.setText("retrofit");
 
@@ -50,8 +57,24 @@ public class SettingsSwt extends ApplicationWindow {
         okButton = new Button(composite, SWT.PUSH);
         okButton.setText("OK");
 
+
         cancelButton = new Button(composite, SWT.PUSH);
         cancelButton.setText("Cancel");
+
+        cancelButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getShell().dispose();
+            }
+        });
+
+        okButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if(retrofitButton.getSelection()){
+                Settings.setClient("retrofit");
+            } else { Settings.setClient("jersey"); }
+        }});
 
     return composite;
     }

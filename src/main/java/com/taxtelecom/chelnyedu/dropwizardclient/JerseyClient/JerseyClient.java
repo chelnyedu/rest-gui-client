@@ -33,8 +33,9 @@ public class JerseyClient implements InterfaceClient {
         contactResource = client.resource(url + "contact/all");
         response = contactResource.accept("application/json").get(ClientResponse.class);
         String all = response.getEntity(String.class);
-        return gson.fromJson(all, new TypeToken<List<Contact>>() {
-        }.getType());
+        contact.clear();
+        contact.addAll(gson.fromJson(all, new TypeToken<List<Contact>>() {}.getType()));
+        return contact;
     }
 
     /**

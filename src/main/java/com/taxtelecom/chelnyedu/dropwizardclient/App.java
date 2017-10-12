@@ -34,12 +34,12 @@ public class App{
         Settings.initial();
 
 
-        args = new String[1];
+        //args = new String[1];
         //args[0] = "retrofit";
-        args[0] = "jersey";
+        //args[0] = "jersey";
         //String type = s.getSettings();
-        //String type = "jersey";
-        interfaceClient = factory.getClienttype(args[0]);
+        //String type = Settings.getClient();
+        interfaceClient = factory.getClienttype(Settings.getClient());
 
 
         PhonebookSwt ph = new PhonebookSwt(600, 300);
